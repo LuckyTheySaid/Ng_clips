@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import {FormGroup, FormControl, Validators} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
 import IUser from "../../models/user.model";
+import {RegisterValidators} from "../Validators/register-validators";
+import{EmailTaken} from "../Validators/email-taken";
 
 
 @Component({
@@ -13,7 +15,8 @@ export class RegisterComponent {
 
   inSubmission=false
   constructor(
-    private auth:AuthService
+    private auth: AuthService,
+    private emailTaken: EmailTaken
   )
   {}
 
@@ -24,7 +27,7 @@ export class RegisterComponent {
   email=new FormControl('',[
     Validators.required,
     Validators.email
-  ])
+  ],[this.emailTaken.validate])
   age=new FormControl<number|null>(null,[
     Validators.required,
     Validators.min(16),
@@ -56,7 +59,7 @@ export class RegisterComponent {
     phoneNumber:this.phoneNumber
 
 
-  })
+  },[RegisterValidators.match('password','confirm_password')])
   async register(){
     this.showAlert=true
     this.alertMsg='Please wait! Your account is being created.'
@@ -79,4 +82,6 @@ export class RegisterComponent {
     this.alerColor='green'
   }
 
+  protected readonly RegisterValidators = RegisterValidators;
+  protected readonly JSON = JSON;
 }
